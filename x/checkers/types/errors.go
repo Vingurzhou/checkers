@@ -2,7 +2,9 @@ package types
 
 // DONTCOVER
 
-import sdkerrors "cosmossdk.io/errors"
+import (
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+)
 
 // x/checkers module sentinel errors
 var (
@@ -16,4 +18,5 @@ var (
 	ErrCreatorNotPlayer     = sdkerrors.Register(ModuleName, 1107, "message creator is not a player")
 	ErrNotPlayerTurn        = sdkerrors.Register(ModuleName, 1108, "player tried to play out of turn")
 	ErrWrongMove            = sdkerrors.Register(ModuleName, 1109, "wrong move")
+	ErrGameFinished         = sdkerrors.Register(ModuleName, 1110, "game is already finished")
 )

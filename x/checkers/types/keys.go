@@ -7,8 +7,11 @@ const (
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
 
-	// RouterKey defines the module's message routing key
+	// RouterKey is the message route for slashing
 	RouterKey = ModuleName
+
+	// QuerierRoute defines the module's query routing key
+	QuerierRoute = ModuleName
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_checkers"
@@ -19,7 +22,7 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	SystemInfoKey = "SystemInfo/value/"
+	SystemInfoKey = "SystemInfo-value-"
 )
 
 const (
@@ -37,4 +40,5 @@ const (
 	MovePlayedEventCapturedX = "captured-x"
 	MovePlayedEventCapturedY = "captured-y"
 	MovePlayedEventWinner    = "winner"
+	MovePlayedEventBoard     = "board"
 )

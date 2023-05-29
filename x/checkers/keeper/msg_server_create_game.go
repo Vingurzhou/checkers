@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"context"
-	"github.com/Vingurzhou/checkers/x/checkers/rules"
 	"strconv"
 
+	"github.com/Vingurzhou/checkers/x/checkers/rules"
 	"github.com/Vingurzhou/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -20,11 +20,12 @@ func (k msgServer) CreateGame(goCtx context.Context, msg *types.MsgCreateGame) (
 
 	newGame := rules.New()
 	storedGame := types.StoredGame{
-		Index: newIndex,
-		Board: newGame.String(),
-		Turn:  rules.PieceStrings[newGame.Turn],
-		Black: msg.Black,
-		Red:   msg.Red,
+		Index:  newIndex,
+		Board:  newGame.String(),
+		Turn:   rules.PieceStrings[newGame.Turn],
+		Black:  msg.Black,
+		Red:    msg.Red,
+		Winner: rules.PieceStrings[rules.NO_PLAYER],
 	}
 
 	err := storedGame.Validate()
