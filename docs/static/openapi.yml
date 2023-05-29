@@ -71647,6 +71647,11 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  vingurzhou.checkers.checkers.MsgCreateGameResponse:
+    type: object
+    properties:
+      gameIndex:
+        type: string
   vingurzhou.checkers.checkers.Params:
     type: object
     description: Params defines the parameters for the module.
