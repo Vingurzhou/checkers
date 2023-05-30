@@ -28,12 +28,17 @@ checkersd query checkers show-system-info
 ```shell
 checkersd keys add zwz
 ```
-
-### 创建棋局
-
+### 查看余额
 ```shell
 export alice=$(checkersd keys show alice -a) 
 export bob=$(checkersd keys show bob -a)
+checkersd query bank balances $alice
+checkersd query bank balances $bob
+```
+### 创建棋局
+
+```shell
+
 checkersd tx checkers create-game $alice $bob --from $alice 
 ```
 ### 查看棋局
