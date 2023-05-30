@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/Vingurzhou/checkers/x/checkers/testutil"
 	"testing"
 
 	"github.com/Vingurzhou/checkers/x/checkers/keeper"
@@ -18,6 +19,10 @@ import (
 )
 
 func CheckersKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+	return CheckersKeeperWithMocks(t, nil)
+}
+
+func CheckersKeeperWithMocks(t testing.TB, bank *testutil.MockBankEscrowKeeper) (*keeper.Keeper, sdk.Context) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -37,6 +42,7 @@ func CheckersKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		"CheckersParams",
 	)
 	k := keeper.NewKeeper(
+		bank,
 		cdc,
 		storeKey,
 		memStoreKey,

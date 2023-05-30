@@ -18,6 +18,7 @@ import (
 const (
 	alice = testutil.Alice
 	bob   = testutil.Bob
+	carol = testutil.Carol
 )
 
 func GetStoredGame1() types.StoredGame {
