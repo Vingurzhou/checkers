@@ -14,6 +14,12 @@ ignite chain serve
 vim config.yml
 ```
 
+### 添加玩家
+
+```shell
+checkersd keys add alice
+```
+
 ### 创建棋局
 
 ```shell
