@@ -5,7 +5,7 @@
 ## 开始
 
 ```shell
-ignite chain serve
+checkersd start
 ```
 
 ### 配置
@@ -14,19 +14,32 @@ ignite chain serve
 vim config.yml
 ```
 
-### 添加玩家
+### 开始
 
 ```shell
-checkersd keys add alice
+checkersd start
+```
+### 查看系统信息
+```shell
+checkersd query checkers show-system-info
+```
+### 创建玩家
+
+```shell
+checkersd keys add zwz
 ```
 
 ### 创建棋局
 
 ```shell
-export alice=$(checkersd keys show alice -a) $ export bob=$(checkersd keys show bob -a)
+export alice=$(checkersd keys show alice -a) 
+export bob=$(checkersd keys show bob -a)
 checkersd tx checkers create-game $alice $bob --from $alice 
 ```
-
+### 查看棋局
+```shell
+checkersd query checkers show-stored-game 1
+```
 ### 查看棋盘
 
 ```shell

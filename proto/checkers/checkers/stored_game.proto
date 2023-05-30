@@ -12,6 +12,8 @@ message StoredGame {
   string winner = 6;
   string deadline = 7;
   uint64 moveCount = 8;
+  string beforeIndex = 9;
+  string afterIndex = 10;
 }
 
 
