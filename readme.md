@@ -27,23 +27,28 @@ checkersd keys add zwz
 ```
 
 ### 查看余额
-
 ```shell
 export alice=$(checkersd keys show alice -a) 
 export bob=$(checkersd keys show bob -a)
 checkersd query bank balances $alice
 checkersd query bank balances $bob
+checkersd query bank balances cosmos16xx0e457hm8mywdhxtmrar9t09z0mqt9x7srm3
 ```
 
 ### 创建棋局
 
 ```shell
-checkersd tx checkers create-game $alice $bob 1000000 --from $alice -y
+checkersd tx checkers create-game \
+    $alice $bob 1 token \
+    --from $alice -y
 ```
+
 ### 估算gas费
+
 ```shell
 checkersd tx checkers create-game $alice $bob 1000000 --from $alice --dry-run -y
 ```
+
 ### 查看棋局
 
 ```shell
@@ -54,6 +59,15 @@ checkersd query checkers show-stored-game 1
 
 ```shell
 checkersd query checkers show-stored-game 1 --output json | jq ".storedGame.board" | sed 's/"//g' | sed 's/|/\n/g'
+```
+
+### 查看是否可执行
+
+```shell
+checkersd query checkers can-play-move 1 w 1 2 2 3
+checkersd query checkers can-play-move 1 r 0 5 1 4
+checkersd query checkers can-play-move 1 b 0 5 1 4
+checkersd query checkers can-play-move 1 b 1 2 2 3
 ```
 
 ### 移动棋子

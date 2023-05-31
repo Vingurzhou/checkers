@@ -43864,6 +43864,69 @@ paths:
                         }
       tags:
         - Query
+  /Vingurzhou/checkers/checkers/can_play_move/{gameIndex}/{player}/{fromX}/{fromY}/{toX}/{toY}:
+    get:
+      summary: Queries a list of CanPlayMove items.
+      operationId: VingurzhouCheckersCheckersCanPlayMove
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              possible:
+                type: boolean
+              reason:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: gameIndex
+          in: path
+          required: true
+          type: string
+        - name: player
+          in: path
+          required: true
+          type: string
+        - name: fromX
+          in: path
+          required: true
+          type: string
+          format: uint64
+        - name: fromY
+          in: path
+          required: true
+          type: string
+          format: uint64
+        - name: toX
+          in: path
+          required: true
+          type: string
+          format: uint64
+        - name: toY
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
   /Vingurzhou/checkers/checkers/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -43938,6 +44001,8 @@ paths:
                     wager:
                       type: string
                       format: uint64
+                    denom:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -44080,6 +44145,8 @@ paths:
                   wager:
                     type: string
                     format: uint64
+                  denom:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -71730,6 +71797,8 @@ definitions:
             wager:
               type: string
               format: uint64
+            denom:
+              type: string
       pagination:
         type: object
         properties:
@@ -71756,6 +71825,13 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
+  vingurzhou.checkers.checkers.QueryCanPlayMoveResponse:
+    type: object
+    properties:
+      possible:
+        type: boolean
+      reason:
+        type: string
   vingurzhou.checkers.checkers.QueryGetStoredGameResponse:
     type: object
     properties:
@@ -71786,6 +71862,8 @@ definitions:
           wager:
             type: string
             format: uint64
+          denom:
+            type: string
   vingurzhou.checkers.checkers.QueryGetSystemInfoResponse:
     type: object
     properties:
@@ -71833,6 +71911,8 @@ definitions:
       wager:
         type: string
         format: uint64
+      denom:
+        type: string
   vingurzhou.checkers.checkers.SystemInfo:
     type: object
     properties:
