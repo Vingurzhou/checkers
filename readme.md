@@ -1,4 +1,4 @@
-# cosmosProject
+# checkers
 
 基于Cosmos SDK和Tendermint的区块链游戏.
 
