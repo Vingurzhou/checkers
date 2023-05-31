@@ -40,7 +40,10 @@ checkersd query bank balances $bob
 ```shell
 checkersd tx checkers create-game $alice $bob 1000000 --from $alice -y
 ```
-
+### 估算gas费
+```shell
+checkersd tx checkers create-game $alice $bob 1000000 --from $alice --dry-run -y
+```
 ### 查看棋局
 
 ```shell
@@ -64,3 +67,4 @@ checkersd tx checkers play-move 1 1 2 2 3 --from $alice -y
 ```shell
 checkersd query checkers list-stored-game
 ```
+
