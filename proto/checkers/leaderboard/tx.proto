@@ -2,15 +2,28 @@ syntax = "proto3";
 
 package vingurzhou.checkers.leaderboard;
 
+import "checkers/leaderboard/player_info.proto";
+
 option go_package = "github.com/Vingurzhou/checkers/x/leaderboard/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc UpdateBoard (MsgUpdateBoard) returns (MsgUpdateBoardResponse);
+  rpc UpdateBoard   (MsgUpdateBoard  ) returns (MsgUpdateBoardResponse  );
+  rpc SendCandidate (MsgSendCandidate) returns (MsgSendCandidateResponse);
 }
 message MsgUpdateBoard {
   string creator = 1;
 }
 
 message MsgUpdateBoardResponse {}
+
+message MsgSendCandidate {
+  PlayerInfo playerInfo       = 5;
+  string     creator          = 1;
+  string     port             = 2;
+  string     channelID        = 3;
+  uint64     timeoutTimestamp = 4;
+}
+
+message MsgSendCandidateResponse {}
 
