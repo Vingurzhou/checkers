@@ -4,10 +4,9 @@ import (
 	"context"
 	sdkerrors "cosmossdk.io/errors"
 	"github.com/Vingurzhou/checkers/x/checkers/rules"
-	"strconv"
-
 	"github.com/Vingurzhou/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
 )
 
 func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*types.MsgPlayMoveResponse, error) {
@@ -65,24 +64,23 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 
 	storedGame.Winner = rules.PieceStrings[game.Winner()]
 
-	lastBoard := game.String()
-
 	systemInfo, found := k.Keeper.GetSystemInfo(ctx)
 	if !found {
 		panic("SystemInfo not found")
 	}
-
+	lastBoard := game.String()
 	if storedGame.Winner == rules.PieceStrings[rules.NO_PLAYER] {
-		storedGame.Board = lastBoard
 		k.Keeper.SendToFifoTail(ctx, &storedGame, &systemInfo)
+		storedGame.Board = lastBoard
 	} else {
-		storedGame.Board = ""
 		k.Keeper.RemoveFromFifo(ctx, &storedGame, &systemInfo)
+		storedGame.Board = ""
 		k.Keeper.MustPayWinnings(ctx, &storedGame)
+		k.Keeper.MustRegisterPlayerWin(ctx, &storedGame)
 	}
 
-	storedGame.Deadline = types.FormatDeadline(types.GetNextDeadline(ctx))
 	storedGame.MoveCount++
+	storedGame.Deadline = types.FormatDeadline(types.GetNextDeadline(ctx))
 	storedGame.Turn = rules.PieceStrings[game.Turn]
 	k.Keeper.SetStoredGame(ctx, storedGame)
 	k.Keeper.SetSystemInfo(ctx, systemInfo)

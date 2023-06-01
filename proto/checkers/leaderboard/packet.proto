@@ -1,0 +1,13 @@
+syntax = "proto3";
+package vingurzhou.checkers.leaderboard;
+
+option go_package = "github.com/Vingurzhou/checkers/x/leaderboard/types";
+
+message LeaderboardPacketData {
+    oneof packet {
+        NoData noData = 1;
+    }
+}
+
+message NoData {
+}

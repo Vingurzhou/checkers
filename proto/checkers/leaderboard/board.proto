@@ -1,0 +1,10 @@
+syntax = "proto3";
+package vingurzhou.checkers.leaderboard;
+
+option go_package = "github.com/Vingurzhou/checkers/x/leaderboard/types";
+import "checkers/leaderboard/player_info.proto";
+import "gogoproto/gogo.proto";
+
+message Board {
+  repeated PlayerInfo playerInfo = 1 [(gogoproto.nullable) = false];
+}

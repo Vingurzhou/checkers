@@ -1,0 +1,7 @@
+syntax = "proto3";
+package vingurzhou.checkers.leaderboard;
+
+option go_package = "github.com/Vingurzhou/checkers/x/leaderboard/types";
+
+// Msg defines the Msg service.
+service Msg {}

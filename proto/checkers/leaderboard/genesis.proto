@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package vingurzhou.checkers.leaderboard;
+
+import "gogoproto/gogo.proto";
+import "checkers/leaderboard/params.proto";
+import "checkers/leaderboard/player_info.proto";
+import "checkers/leaderboard/board.proto";
+
+option go_package = "github.com/Vingurzhou/checkers/x/leaderboard/types";
+
+// GenesisState defines the leaderboard module's genesis state.
+message GenesisState {
+  Params     params = 1 [(gogoproto.nullable) = false];
+  string     port_id = 2;
+  repeated PlayerInfo playerInfoList = 3 [(gogoproto.nullable) = false];
+  Board      board = 4[(gogoproto.nullable) = false];
+}
+
