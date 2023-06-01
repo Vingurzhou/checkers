@@ -13,7 +13,7 @@ import (
 )
 
 func TestForfeitUnplayed(t *testing.T) {
-	_, keeper, context, ctrl, _ := setupMsgServerWithOneGameForPlayMove(t)
+	_, keeper, context, ctrl, _, _ := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	game1, found := keeper.GetStoredGame(ctx, "1")
@@ -46,7 +46,7 @@ func TestForfeitUnplayed(t *testing.T) {
 }
 
 func TestForfeitOlderUnplayed(t *testing.T) {
-	msgServer, keeper, context, ctrl, _ := setupMsgServerWithOneGameForPlayMove(t)
+	msgServer, keeper, context, ctrl, _, _ := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	msgServer.CreateGame(context, &types.MsgCreateGame{
@@ -54,6 +54,7 @@ func TestForfeitOlderUnplayed(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -85,7 +86,7 @@ func TestForfeitOlderUnplayed(t *testing.T) {
 }
 
 func TestForfeit2OldestUnplayedIn1Call(t *testing.T) {
-	msgServer, keeper, context, ctrl, _ := setupMsgServerWithOneGameForPlayMove(t)
+	msgServer, keeper, context, ctrl, _, _ := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	msgServer.CreateGame(context, &types.MsgCreateGame{
@@ -93,12 +94,14 @@ func TestForfeit2OldestUnplayedIn1Call(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Black:   alice,
 		Red:     bob,
 		Wager:   47,
+		Denom:   "gold",
 	})
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -139,7 +142,7 @@ func TestForfeit2OldestUnplayedIn1Call(t *testing.T) {
 }
 
 func TestForfeitPlayedOnce(t *testing.T) {
-	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	msgServer, keeper, context, ctrl, escrow, _ := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	pay := escrow.ExpectPay(context, bob, 45).Times(1)
@@ -182,7 +185,7 @@ func TestForfeitPlayedOnce(t *testing.T) {
 }
 
 func TestForfeitOlderPlayedOnce(t *testing.T) {
-	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	msgServer, keeper, context, ctrl, escrow, _ := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	pay := escrow.ExpectPay(context, bob, 45).Times(1)
@@ -200,6 +203,7 @@ func TestForfeitOlderPlayedOnce(t *testing.T) {
 		Red:     carol,
 		Black:   alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -231,13 +235,13 @@ func TestForfeitOlderPlayedOnce(t *testing.T) {
 }
 
 func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
-	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	msgServer, keeper, context, ctrl, escrow, _ := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
-	payCarol := escrow.ExpectPay(context, carol, 46).Times(1).After(payBob)
+	payCarol := escrow.ExpectPayWithDenom(context, carol, 46, "coin").Times(1).After(payBob)
 	refundBob := escrow.ExpectRefund(context, bob, 45).Times(1).After(payCarol)
-	escrow.ExpectRefund(context, carol, 46).Times(1).After(refundBob)
+	escrow.ExpectRefundWithDenom(context, carol, 46, "coin").Times(1).After(refundBob)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -251,6 +255,7 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   carol,
@@ -265,6 +270,7 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 		Black:   alice,
 		Red:     bob,
 		Wager:   47,
+		Denom:   "gold",
 	})
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -306,12 +312,14 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 }
 
 func TestForfeitPlayedTwice(t *testing.T) {
-	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	msgServer, keeper, context, ctrl, escrow, board := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
 	payCarol := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
 	escrow.ExpectRefund(context, carol, 90).Times(1).After(payCarol)
+	board.ExpectWin(context, carol).Times(1)
+	board.ExpectForfeit(context, bob).Times(1)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -343,12 +351,13 @@ func TestForfeitPlayedTwice(t *testing.T) {
 		Turn:        "b",
 		Black:       bob,
 		Red:         carol,
-		Winner:      "r",
-		Deadline:    oldDeadline,
 		MoveCount:   uint64(2),
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Deadline:    oldDeadline,
+		Winner:      "r",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 
 	systemInfo, found := keeper.GetSystemInfo(ctx)
@@ -372,12 +381,14 @@ func TestForfeitPlayedTwice(t *testing.T) {
 }
 
 func TestForfeitOlderPlayedTwice(t *testing.T) {
-	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	msgServer, keeper, context, ctrl, escrow, board := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
 	payCarol := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
 	escrow.ExpectRefund(context, carol, 90).Times(1).After(payCarol)
+	board.ExpectWin(context, carol).Times(1)
+	board.ExpectForfeit(context, bob).Times(1)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -399,6 +410,7 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -415,12 +427,13 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 		Turn:        "b",
 		Black:       bob,
 		Red:         carol,
-		Winner:      "r",
-		Deadline:    oldDeadline,
 		MoveCount:   uint64(2),
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Deadline:    oldDeadline,
+		Winner:      "r",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 
 	systemInfo, found := keeper.GetSystemInfo(ctx)
@@ -444,15 +457,19 @@ func TestForfeitOlderPlayedTwice(t *testing.T) {
 }
 
 func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
-	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	msgServer, keeper, context, ctrl, escrow, board := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
 	payCarol1 := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
-	payCarol2 := escrow.ExpectPay(context, carol, 46).Times(1).After(payCarol1)
-	payAlice := escrow.ExpectPay(context, alice, 46).Times(1).After(payCarol2)
+	payCarol2 := escrow.ExpectPayWithDenom(context, carol, 46, "coin").Times(1).After(payCarol1)
+	payAlice := escrow.ExpectPayWithDenom(context, alice, 46, "coin").Times(1).After(payCarol2)
 	refundCarol := escrow.ExpectRefund(context, carol, 90).Times(1).After(payAlice)
-	escrow.ExpectRefund(context, alice, 92).Times(1).After(refundCarol)
+	escrow.ExpectRefundWithDenom(context, alice, 92, "coin").Times(1).After(refundCarol)
+	board.ExpectWin(context, carol).Times(1)
+	board.ExpectWin(context, alice).Times(1)
+	board.ExpectForfeit(context, bob).Times(1)
+	board.ExpectForfeit(context, carol).Times(1)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -474,6 +491,7 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   carol,
@@ -496,6 +514,7 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		Black:   alice,
 		Red:     bob,
 		Wager:   47,
+		Denom:   "gold",
 	})
 	game1, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -516,12 +535,13 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		Turn:        "b",
 		Black:       bob,
 		Red:         carol,
-		Winner:      "r",
-		Deadline:    oldDeadline,
 		MoveCount:   uint64(2),
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Deadline:    oldDeadline,
+		Winner:      "r",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 
 	game2, found = keeper.GetStoredGame(ctx, "2")
@@ -532,12 +552,13 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		Turn:        "b",
 		Black:       carol,
 		Red:         alice,
-		Winner:      "r",
-		Deadline:    oldDeadline,
 		MoveCount:   uint64(2),
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Deadline:    oldDeadline,
+		Winner:      "r",
 		Wager:       46,
+		Denom:       "coin",
 	}, game2)
 
 	systemInfo, found := keeper.GetSystemInfo(ctx)

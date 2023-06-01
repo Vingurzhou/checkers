@@ -72214,6 +72214,8 @@ definitions:
               format: uint64
             dateUpdated:
               type: string
+  vingurzhou.checkers.leaderboard.MsgUpdateBoardResponse:
+    type: object
   vingurzhou.checkers.leaderboard.Params:
     type: object
     description: Params defines the parameters for the module.
