@@ -81,4 +81,11 @@ checkersd tx checkers play-move 1 1 2 2 3 --from $alice -y
 ```shell
 checkersd query checkers list-stored-game
 ```
-
+### 查看玩家列表
+```shell
+checkersd query leaderboard list-player-info
+```
+### 发送玩家分数到区块链排行榜
+```shell
+checkersd tx leaderboard send-candidate leaderboard channel-0 --from $alice
+```
